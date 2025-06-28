@@ -35,3 +35,29 @@ class Model:
 
     def getIdMap(self):
         return self._idMap
+
+    def getInfoConnessa(self, idInput):
+        source = self._idMap[idInput]
+        # Modo 1: contare i successori
+        succ = nx.dfs_successors(self._graph, source).values()
+        result = []
+        for s in succ:
+            result.extend(s)
+        print(f"Size connessa con modo 1: {len(result)}") # --> non contiene il nodo source
+        # Modo 2: contare i predecessori
+        pred = nx.dfs_predecessors(self._graph, source)
+        print(f"Size connessa con modo 2: {len(pred.values())}") # --> non contiene il nodo source
+        # Modo 3: contare i nodi dell'albero di visita
+        dfsTree = nx.dfs_tree(self._graph, source)
+        print(f"Size connessa con modo 3: {len(dfsTree.nodes())-1}") # --> contiene il nodo source
+        # Modo 4: utilizza il metodo nodes_connected_components di networkx
+        connComp = nx.node_connected_component(self._graph, source)
+        print(f"Size connessa con modo 4: {len(connComp)}")
+        return len(connComp)
+
+    def hasNode(self, idInput):
+        return idInput in self._idMap # se l'id fa parte della mappa, allora fa parte anche dei nodi del grafo
+        # (da cui deriva la creazione della mappa)
+
+    def getObjectFromId(self, id):
+        return self._idMap[id]
