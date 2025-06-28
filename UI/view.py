@@ -1,29 +1,28 @@
 import flet as ft
 
-
 class View(ft.UserControl):
     def __init__(self, page: ft.Page):
         super().__init__()
-        # page stuff
+        # Page stuff
         self._page = page
         self._page.title = "TdP Exercise on MIA Art database"
         self._page.horizontal_alignment = 'CENTER'
         self._page.theme_mode = ft.ThemeMode.LIGHT
-        # controller (it is not initialized. Must be initialized in the main, after the controller is created)
+        # Controller (it is not initialized. Must be initialized in the main, after the controller is created)
         self._controller = None
-        # graphical elements
+        # Graphical elements
         self._title = None
-        self.txt_name = None
-        self.btn_hello = None
+        self._btnAnalizzaOggetti = None
+        self._txtIdOggetto = None
+        self._btnCompConnessa = None
         self.txt_result = None
-        self.txt_container = None
 
     def load_interface(self):
-        # title
+        # Title
         self._title = ft.Text("The MIA Collection database", color="orange", size=24)
         self._page.controls.append(self._title)
 
-        # controls
+        # Controls
         self._btnAnalizzaOggetti = ft.ElevatedButton(text="Analizza oggetti",
                                                      on_click=self._controller.handleAnalizzaOggetti,
                                                      bgcolor="orange",
