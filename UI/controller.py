@@ -40,4 +40,25 @@ class Controller:
         sizeCompConnessa = self._model.getInfoConnessa(idInput)
         self._view.txt_result.controls.clear()
         self._view.txt_result.controls.append(ft.Text(f"La componente connessa, che contiene il nodo {self._model.getObjectFromId(idInput)}, ha dimensione pari a {sizeCompConnessa}."))
+        self._view._ddLun.disabled = False
+        self._view._btnCerca.disabled = False
+        myValues = range(2, sizeCompConnessa)
+        for value in myValues:
+            self._view._ddLun.options.append(ft.dropdown.Option(value)) # si può usare anche il metodo map
+        self._view.update_page()
+
+    def handleCerca(self, e):
+        source = self._model.getObjectFromId(int(self._view._txtIdOggetto.value))
+        lunghezza = self._view._ddLun.value
+        if lunghezza is None:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text("Attenzione: selezionare un parametro lunghezza!"))
+            self._view.update_page()
+            return
+        lunghezzaInt = int(lunghezza)
+        path, cost = self._model.getOptPath(source, lunghezzaInt)
+        self._view.txt_result.controls.clear()
+        self._view.txt_result.controls.append(ft.Text(f"Il cammino che parte da {source} è stato trovato con peso totale {cost}:"))
+        for nodo in path:
+            self._view.txt_result.controls.append(ft.Text(f"{nodo}"))
         self._view.update_page()

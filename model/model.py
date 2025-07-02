@@ -1,3 +1,5 @@
+import copy
+
 import networkx as nx
 from database.DAO import DAO
 
@@ -9,6 +11,8 @@ class Model:
         self._idMap = {}
         for node in self._nodes:
             self._idMap[node.object_id] = node
+        self._bestPath = []
+        self._bestCost = 0
 
     def buildGraph(self):
         self._graph.add_nodes_from(self._nodes)
@@ -61,3 +65,35 @@ class Model:
 
     def getObjectFromId(self, id):
         return self._idMap[id]
+
+    def getOptPath(self, source, lunghezza):
+        self._bestPath = []
+        self._bestCost = 0
+        soluzione_parziale = [source]
+        for nodo in nx.neighbors(self._graph, source):
+            if soluzione_parziale[0].classification == nodo.classification:
+                soluzione_parziale.append(nodo)
+                self._ricorsione(soluzione_parziale, lunghezza)
+                soluzione_parziale.pop()
+        return self._bestPath, self._bestCost
+
+    def _ricorsione(self, soluzione_parziale, lunghezza):
+        if len(soluzione_parziale) == lunghezza: # la soluzione parziale possiede la lunghezza desiderata
+            # bisogna verificare che la soluzione parziale sia quella ottima:
+            if self.costo(soluzione_parziale) > self._bestCost:
+                self._bestCost = self.costo(soluzione_parziale)
+                self._bestPath = copy.deepcopy(soluzione_parziale)
+            return # è fuori dall'if in quanto bisogna comunque uscire sia che la soluzione parziale sia quella
+            # migliore sia che non lo sia
+        # Arrivati qui, la soluzione parziale può ancora ammettere altri nodi
+        for n in self._graph.neighbors(soluzione_parziale[-1]):
+            if soluzione_parziale[0].classification == n.classification:
+                soluzione_parziale.append(n)
+                self._ricorsione(soluzione_parziale, lunghezza)
+                soluzione_parziale.pop()
+
+    def costo(self, listObjects):
+        totCosto = 0
+        for i in range(0, len(listObjects)-1):
+            totCosto += self._graph[listObjects[i]][listObjects[i+1]]["weight"]
+        return totCosto
